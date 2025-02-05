@@ -6,11 +6,12 @@ interface NoteCardProps {
     timestamp: string
     content: string
     duration?: string
-    type: "audio" | "text"
+    type: string
     imageCount?: number
+    openModal: () => void;
 }
 
-export function NoteCard({ title, timestamp, content, duration, type, imageCount }: NoteCardProps) {
+export function NoteCard({ title, timestamp, content, duration, type, imageCount, openModal }: NoteCardProps) {
     const maxContentSize = 250;
     let newContent = content;
     if (content.length > maxContentSize) {
@@ -18,22 +19,22 @@ export function NoteCard({ title, timestamp, content, duration, type, imageCount
     }
     return (
         <div className="w-80 h-80 border border-slate-200 p-6 rounded-lg flex justify-between flex-col">
-            <div>
+            <div onClick={openModal} className="cursor-pointer">
                 <div className="">
                     <div className="">
                         <div className="flex justify-between">
                             <p className="text-sm text-muted-foreground">{timestamp}</p>
                             <div className="flex justify-center items-center gap-1 rounded-full bg-gray-200 pl-2 pr-2">
-                                {duration && <>
+                                {type === "text" ? <>
                                     <Play size={12} color="black" fill="black" />
                                     <span className="text-xs text-muted-foreground">{duration}</span>
-                                </>
+                                </> :
+                                    <>
+                                        <TypeOutline size={12} fill="black" />
+                                        <span className="text-xs">Text</span>
+                                    </>
                                 }
-                                {type === "text" && <>
-                                    <TypeOutline size={12} fill="black" />
-                                    <span className="text-xs">Text</span>
-                                </>
-                                }
+
                             </div>
                         </div>
                         <h3 className="font-medium mt-4">{title}</h3>
@@ -53,11 +54,11 @@ export function NoteCard({ title, timestamp, content, duration, type, imageCount
                 </div>
             </div>
             <div className="flex justify-end gap-2">
-                <button className="h-8 w-8">
+                <button className="h-8 w-8" onClick={() => navigator.clipboard.writeText(content)}>
                     <Copy className="h-4 w-4" />
                 </button>
                 <button className="h-8 w-8">
-                    <MoreHorizontal className="h-4 w-4" />
+                    <MoreHorizontal className="h-4 w-4" onClick={openModal}/>
                 </button>
             </div>
         </div>

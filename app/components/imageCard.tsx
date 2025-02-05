@@ -1,9 +1,13 @@
 "use client";
 import { Trash2 } from "lucide-react";
 import Image from "next/image";
-import image from './image.png'
+import image from './image.png';
 
-export default function ImageCard() {
+export default function ImageCard({ src }: { src: string }) {
+  // console.log(src);
+  // console.log(image);
+  
+  
     return (
         <div className="flex items-start gap-4">
         {/* Robot Icon */}

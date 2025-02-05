@@ -26,7 +26,7 @@ const RecordingContainer: React.FC<RecordingContainerProps> = ({ originalText, s
             onClick={startStopListening} 
             className={`px-4 py-2 rounded ${isListening ? 'bg-red-500' : 'bg-green-500'} text-white`}
         > 
-            {isListening ? 'Stop' : 'Speak'}
+            {isListening ? 'Stop' : 'Tap & Speak'}
         </button>
         <textarea 
             className="mt-4 w-full p-2 border rounded" 

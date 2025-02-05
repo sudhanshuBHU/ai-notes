@@ -20,13 +20,14 @@ export default function RecordingOn({ closeModal, originalText, setOriginalText 
             {/* heading and copy btn */}
             <div className="flex gap-2 items-center">
                 <h2 className="text-gray-500 font-semibold">Record Voice or Write Note</h2>
+                
                 {/* copy to clipboard */}
-                <button onClick={() => {
+                {/* <button onClick={() => {
                     navigator.clipboard.writeText(originalText);
                     console.log("copied note: ", originalText);
                 }}>
                     <Files size={14} />
-                </button>
+                </button> */}
             </div>
 
             {/* add title */}

@@ -1,11 +1,29 @@
 "use client";
 
 import { Home, Star } from "lucide-react";
-import { useState } from "react";
+import { SetStateAction, useState, Dispatch } from "react";
 
-export function Sidebar() {
-    // if (typeof window !== 'undefined') return;
+interface dataType { userId: string; title: string; description: string; image: string[]; favorite: boolean; audioLength: string; timestamp: string; type: string; }
+
+interface SidebarProps {
+    dataset: dataType[]
+    data: dataType[]
+    setDataset: Dispatch<SetStateAction<{ userId: string; title: string; description: string; image: string[]; favorite: boolean; audioLength: string; timestamp: string; type: string; }[]>>
+}
+
+export function Sidebar({ data, dataset, setDataset }: SidebarProps) {
     const [selectedHome, setSelectedHome] = useState(true);
+
+    const handleFavorite = () => {
+        const newData = data.filter((item) => item.favorite);
+        setDataset(newData);
+        setSelectedHome(false);
+    }
+    const handleHome = () => {
+        setDataset(data);
+        setSelectedHome(true);
+    }
+
     return (
         <div className="w-60 bg-background flex flex-col h-full border rounded-lg pl-2 pr-2 ">
             {/* <div className=" border rounded-lg p-4 h-full w-full"> */}
@@ -18,15 +36,18 @@ export function Sidebar() {
                         <span className="font-semibold">AI Notes</span>
                     </div>
 
+                {/* home button */}
                     <div className="flex flex-col gap-2">
-                        <button className={`p-2 border flex gap-2 font-semibold rounded-full text-gray-500 ${selectedHome ? 'text-purple-800 bg-gray-200' : ''}`}
-                            onClick={() => setSelectedHome(true)}
+                        <button className={`p-2 flex gap-2 font-semibold rounded-full text-gray-500 ${selectedHome ? 'text-purple-800 bg-gray-200' : ''}`}
+                            onClick={handleHome}
                         >
                             <Home size={24} />
                             Home
                         </button>
+                        
+                        {/* favorite button */}
                         <button className={`p-2 flex gap-2 font-semibold rounded-full text-gray-500 ${selectedHome ? '' : 'text-purple-800 bg-gray-200'}`}
-                            onClick={() => setSelectedHome(false)}
+                            onClick={handleFavorite}
                         >
                             <Star size={24} />
                             Favourites

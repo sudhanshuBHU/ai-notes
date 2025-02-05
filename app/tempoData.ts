@@ -6,6 +6,8 @@ const data = [
       image: ["https://images-na.ssl-images-amazon.com/images/I/91bYsX41DVL.jpg"],
       favorite: true,
       audioLength: "5:30",
+      timestamp: "Jan 31, 2025 · 5:26 PM",
+      type: "audio",
     },
     {
       userId: "2",
@@ -14,6 +16,8 @@ const data = [
       image: ["https://images-na.ssl-images-amazon.com/images/I/81j3r9ZGnHL.jpg"],
       favorite: false,
       audioLength: "4:45",
+      timestamp: "Feb 30, 2025 · 5:26 PM",
+      type: "text",
     },
     {
       userId: "3",
@@ -22,6 +26,8 @@ const data = [
       image: ["https://images-na.ssl-images-amazon.com/images/I/91N7FM2Bs7L.jpg"],
       favorite: true,
       audioLength: "6:10",
+      timestamp: "Mar 3, 2025 · 5:26 PM",
+      type: "audio",
     },
     {
       userId: "4",
@@ -30,6 +36,8 @@ const data = [
       image: ["https://images-na.ssl-images-amazon.com/images/I/71mP1LhSxLL.jpg"],
       favorite: false,
       audioLength: "3:25",
+      timestamp: "Dec 30, 2025 · 5:26 PM",
+      type: "text",
     },
     {
       userId: "5",
@@ -38,6 +46,8 @@ const data = [
       image: ["https://images-na.ssl-images-amazon.com/images/I/81tW5OpHNVL.jpg"],
       favorite: true,
       audioLength: "5:00",
+      timestamp: "Oct 30, 2025 · 5:26 PM",
+      type: "audio",
     },
     {
       userId: "6",
@@ -46,6 +56,8 @@ const data = [
       image: ["https://images-na.ssl-images-amazon.com/images/I/71aFt4+OTOL.jpg"],
       favorite: false,
       audioLength: "4:20",
+      timestamp: "Nov 30, 2025 · 5:26 PM",
+      type: "text",
     },
     {
       userId: "7",
@@ -54,6 +66,8 @@ const data = [
       image: ["https://images-na.ssl-images-amazon.com/images/I/81bsw6fnUiL.jpg"],
       favorite: true,
       audioLength: "6:15",
+      timestamp: "Dec 30, 2025 · 5:26 PM",
+      type: "audio",
     },
     {
       userId: "8",
@@ -62,6 +76,8 @@ const data = [
       image: ["https://images-na.ssl-images-amazon.com/images/I/81zq5h12fqL.jpg"],
       favorite: false,
       audioLength: "7:00",
+      timestamp: "Apr 30, 2025 · 5:26 PM",
+      type: "text",
     },
     {
       userId: "9",
@@ -70,6 +86,8 @@ const data = [
       image: ["https://images-na.ssl-images-amazon.com/images/I/71pFe69ZPvL.jpg"],
       favorite: true,
       audioLength: "5:50",
+      timestamp: "May 30, 2025 · 5:26 PM",
+      type: "audio",
     },
     {
       userId: "10",
@@ -78,6 +96,8 @@ const data = [
       image: ["https://images-na.ssl-images-amazon.com/images/I/71T0b3HbM1L.jpg"],
       favorite: false,
       audioLength: "4:10",
+      timestamp: "Jun 30, 2025 · 5:26 PM",
+      type: "text",
     },
   ];
   
