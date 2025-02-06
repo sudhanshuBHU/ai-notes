@@ -1,11 +1,11 @@
 "use client";
 
 import { AlignLeft, Plus, CirclePause, CirclePlay, Download, Files, Layers, MoveDiagonal, NotebookPen, PencilLineIcon, Search, SlidersHorizontal, Star, Users, ArrowDownAZ, ArrowDownZA, Trash2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { Sidebar } from "../components/side-bar"
 import { NoteCard } from "../components/note-card"
-import { RecordingBar } from "../components/recording-bar"
-import { useEffect, useRef, useState } from "react";
-import Modal from "../components/card";
+import { RecordingBar } from "../components/Recording-bar"
+import Modal from "../components/Card";
 import ImageCard from "../components/imageCard";
 import TiptapEditor from "../components/editor";
 import RecordingOn from "../components/RecordingOn";
@@ -13,9 +13,7 @@ import { useRouter } from "next/navigation";
 import { Note } from '@/types/dataTypes';
 import UpdateTitle from "../components/UpdateTitle";
 
-// interface dataType {
-//   userId: string; title: string; description: string; image: string[]; favorite: boolean; audioLength: string; timestamp: string; type: string;
-// }
+
 
 export default function Dashboard() {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -34,6 +32,8 @@ export default function Dashboard() {
   const [chanheTitleModal, setChangeTitleModal] = useState(false);
   const [imageSrc, setImageSrc] = useState<string>('');
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [images, setImages] = useState<(string | null)[]>([]);
+
 
   const closeEditor = () => setIsEditorOn(false);
   const closeModal = () => setModalOpen(false);
@@ -101,8 +101,7 @@ export default function Dashboard() {
           }
         });
         const data = await res.json();
-        console.log(data);
-
+        // console.log(data);
         setDataset(data.notes);
         setData(data.notes);
       } catch (error) {
@@ -197,6 +196,23 @@ export default function Dashboard() {
     setImageSrc('');
     setImageFile(null);
   }
+
+  // extracting all images to avoid require() in the render
+  useEffect(() => {
+    const loadImages = async () => {
+      const loadedImages = await Promise.all(
+        dataset[selectedIndex]?.image.map(async (item) => {
+          if (item === '') return null;
+          const imageModule = await import(`@/uploads/${item}`);
+          return imageModule.default || imageModule;
+        })
+      );
+      setImages(loadedImages);
+    };
+
+    loadImages();
+  }, [dataset, selectedIndex]);
+
   return (
     <div className="flex h-screen w-full">
 
@@ -238,6 +254,7 @@ export default function Dashboard() {
           {dataset?.map((item, index) => {
             return <div key={index} className="mr-4 mb-4">
               <NoteCard
+                setDataset={setDataset}
                 openModal={() => { setModalOpen(true); setSelectedIndex(index) }}
                 title={item.title}
                 timestamp={item.updatedAt}
@@ -322,6 +339,8 @@ export default function Dashboard() {
           <button onClick={() => setModalClickedBtn('layers')} className={`flex text-sm rounded-full hover:bg-gray-200 pt-1 pb-1 pl-2 pr-2 ${modalClickedBtn === "layers" ? 'bg-gray-200' : ''}`}><Layers className="mt-1" size={14} />&nbsp;Create</button>
           <button onClick={() => setModalClickedBtn('users')} className={`flex text-sm rounded-full hover:bg-gray-200 pt-1 pb-1 pl-2 pr-2 ${modalClickedBtn === "users" ? 'bg-gray-200' : ''}`}><Users className="mt-1" size={14} />&nbsp;Speaker Transcript</button>
         </div>
+
+        {/* description */}
         <div className="border rounded-lg mt-4 p-2">
           <div className=" flex justify-between pl-3 pr-3 ">
             <div className="font-bold">Transcript</div>
@@ -331,14 +350,30 @@ export default function Dashboard() {
           <div className="pl-3 pr-3 text-sm">{dataset[selectedIndex]?.description.length > 200 ? dataset[selectedIndex]?.description.slice(0, 200) + '...' : dataset[selectedIndex]?.description}</div>
           <button className="pl-3 underline text-sm text-gray-400 mt-3" onClick={() => setIsEditorOn(true)}>Read More</button>
         </div>
+
+        {/* displaying images */}
         <div className="mt-4 overflow-y-scroll h-[22%] overflow-x-scroll w-[63%] pt-2 pl-3 pr-3 absolute flex flex-wrap gap-2">
 
           {/* require(`@/uploads/${dataset[selectedIndex]?.image[0]}`) */}
-          {dataset[selectedIndex]?.image.map((item, index) => {
-            if(item === '') return null;
-            return <div key={index}><ImageCard src={require(`@/uploads/${item}`)} noteId={dataset[selectedIndex]._id} deleteIdx={index} /></div>
+          {/* {dataset[selectedIndex]?.image.map((item, index) => {
+            if (item === '') return null;
+            return <div key={index}><ImageCard src={require(`@/uploads/${item}`)} noteId={dataset[selectedIndex]._id} deleteIdx={index} setDataset={setDataset} /></div>
           })
-          }
+          } */}
+
+          {images.map((src, index) => {
+            if (!src) return null;
+            return (
+              <div key={index}>
+                <ImageCard
+                  src={src}
+                  noteId={dataset[selectedIndex]._id}
+                  deleteIdx={index}
+                  setDataset={setDataset}
+                />
+              </div>
+            );
+          })}
 
 
           {/* Image Upload Button */}
@@ -361,15 +396,17 @@ export default function Dashboard() {
               <Plus className="h-4 w-4" />
               <span className="text-xs font-normal">Image</span>
             </button>}
+
+          {/* insert image */}
           {imageSrc &&
             <div className="">
               {/* <img src={imageSrc} alt="Uploaded" className="max-w-24 max-h-24 rounded-lg" /> */}
-              <ImageCard src={imageSrc} noDelete="temp" close={() => {
+              <ImageCard setDataset={setDataset} src={imageSrc} noDelete="temp" close={() => {
                 setImageSrc(''); setImageFile(null);
               }} />
             </div>
           }
-          { imageSrc &&
+          {imageSrc &&
             <button className=" mb-2 text-blue-500 font-bold hover:text-blue-700" onClick={addImage}>Add Image</button>
           }
         </div>
@@ -378,21 +415,21 @@ export default function Dashboard() {
       {/* editor */}
       <div>
         <Modal show={isEditorOn}>
-          <TiptapEditor closeEditor={closeEditor} dataset={dataset} index={selectedIndex} />
+          <TiptapEditor closeEditor={closeEditor} dataset={dataset} setDataset={setDataset} index={selectedIndex} />
         </Modal>
       </div>
 
       {/* recording on Modal */}
       <div>
         <Modal show={isRecordingModalOpen}>
-          <RecordingOn closeModal={() => setIsRecordingModalOpen(false)} />
+          <RecordingOn closeModal={() => setIsRecordingModalOpen(false)} setDataset={setDataset} />
         </Modal>
       </div>
 
       {/* change title modal */}
       <div>
         <Modal show={chanheTitleModal}>
-          <UpdateTitle closeEditor={() => setChangeTitleModal(false)} dataset={dataset} index={selectedIndex} />
+          <UpdateTitle closeEditor={() => setChangeTitleModal(false)} dataset={dataset} index={selectedIndex} setDataset={setDataset} />
         </Modal>
       </div>
     </div>

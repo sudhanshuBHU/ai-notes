@@ -5,7 +5,7 @@ import Data from "@/models/Data";
 import { NextRequest, NextResponse } from "next/server";
 import { writeFile } from "fs/promises";
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         await db();
 

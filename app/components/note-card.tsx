@@ -1,7 +1,8 @@
 "use client";
 
+import { Note } from "@/types/dataTypes";
 import { Copy, MoreHorizontal, ImageIcon, Play, TypeOutline } from "lucide-react";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 interface NoteCardProps {
     title: string
     timestamp: string
@@ -11,9 +12,10 @@ interface NoteCardProps {
     imageCount?: number
     openModal: () => void;
     noteId?: string;
+    setDataset: Dispatch<SetStateAction<Note[]>>;
 }
 
-export function NoteCard({ title, timestamp, content, duration, type, imageCount, openModal, noteId }: NoteCardProps) {
+export function NoteCard({ title, timestamp, content, duration, type, imageCount, openModal, noteId, setDataset }: NoteCardProps) {
     const maxContentSize = 250;
     let newContent = content;
     const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -26,7 +28,7 @@ export function NoteCard({ title, timestamp, content, duration, type, imageCount
     // deleting note
     const handleDelete = async () => {
         const token = localStorage.getItem('tars_token');
-        await fetch('/api/dashboard', {
+        await fetch(`${process.env.BASE_URL}/api/dashboard`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -41,7 +43,22 @@ export function NoteCard({ title, timestamp, content, duration, type, imageCount
             .catch(err => {
                 console.log(err);
             });
-            setIsPopupOpen(false);
+
+        // update the dataset
+        const userId = localStorage.getItem('tars_userId') || '';
+        fetch(`${process.env.BASE_URL}/api/dashboard`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'userId': userId,
+                'Authorization': `Bearer ${token}`
+            }
+        }).then(res => res.json()).then(data => {
+            // console.log(data);
+            setDataset(data.notes);
+        });
+
+        setIsPopupOpen(false);
     }
 
     if (content.length > maxContentSize) {

@@ -5,16 +5,17 @@ import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import { Bold, Files, Heading, Italic, List, Redo, Strikethrough, Undo, Underline as UnderlineIcon } from "lucide-react";
 import { Note } from "@/types/dataTypes";
+import { Dispatch, SetStateAction } from "react";
 
-export default function TiptapEditor({ closeEditor, dataset, index }: { closeEditor: () => void, dataset: Note[], index: number }) {
+export default function TiptapEditor({ closeEditor, dataset, index, setDataset }: { closeEditor: () => void, dataset: Note[], index: number, setDataset: Dispatch<SetStateAction<Note[]>> }) {
     const editor = useEditor({
         extensions: [StarterKit, Underline],
         content: dataset[index].description,
         editorProps: {
             attributes: {
-              class: "prose h-full h-full p-2 text-gray-900",
+                class: "prose h-full h-full p-2 text-gray-900",
             },
-          }
+        }
     });
 
     if (!editor) return null;
@@ -22,24 +23,37 @@ export default function TiptapEditor({ closeEditor, dataset, index }: { closeEdi
     // Save content to the database -> update the description of the note
     const saveContent = () => {
         try {
-          const token = localStorage.getItem('tars_token');
-          const noteId = dataset[index]._id;
-          fetch(`${process.env.BASE_URL}/api/dashboard/updateDescription`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ noteId, description: editor.getText() })
-          }).then(res => res.json()).then(data => {
-            console.log(data);
-          });
-    
+            const token = localStorage.getItem('tars_token');
+            const noteId = dataset[index]._id;
+            fetch(`${process.env.BASE_URL}/api/dashboard/updateDescription`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ noteId, description: editor.getText() })
+            }).then(res => res.json()).then(data => {
+                console.log(data);
+            });
+             // Update the dataset
+            const userId = localStorage.getItem('tars_userId') || '';
+            fetch(`${process.env.BASE_URL}/api/dashboard`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'userId': userId,
+                    'Authorization': `Bearer ${token}`
+                }
+            }).then(res => res.json()).then(data => {
+                console.log(data);
+                setDataset(data.notes);
+            });
+
         } catch (error) {
-          console.log(error);
+            console.log(error);
         }
-      }
-    
+    }
+
     return (
         <div className="p-4 pt-1 rounded-lg w-full mx-auto">
             {/* close and save btn */}
@@ -56,7 +70,7 @@ export default function TiptapEditor({ closeEditor, dataset, index }: { closeEdi
             </div>
             {/* Editor Content */}
             <div className="p-2 rounded bg-white text-black mt-4 text-sm h-96 overflow-y-scroll">
-                <EditorContent editor={editor}/>
+                <EditorContent editor={editor} />
             </div>
             {/* Toolbar */}
             <div className="flex justify-center items-center mt-5">

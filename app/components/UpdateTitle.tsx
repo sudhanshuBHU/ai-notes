@@ -1,12 +1,14 @@
 "use client";
 
 import { useEditor, EditorContent } from "@tiptap/react";
+import { Dispatch } from "react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import { Bold, Files, Heading, Italic, List, Redo, Strikethrough, Undo, Underline as UnderlineIcon } from "lucide-react";
 import { Note } from "@/types/dataTypes";
+import { SetStateAction } from "react";
 
-export default function TiptapEditor({ closeEditor, dataset, index }: { closeEditor: () => void, dataset: Note[], index: number }) {
+export default function TiptapEditor({ closeEditor, dataset, index, setDataset }: { closeEditor: () => void, dataset: Note[], index: number, setDataset: Dispatch<SetStateAction<Note[]>> }) {
     const editor = useEditor({
         extensions: [StarterKit, Underline],
         content: dataset[index].title,
@@ -34,6 +36,21 @@ export default function TiptapEditor({ closeEditor, dataset, index }: { closeEdi
           }).then(res => res.json()).then(data => {
             console.log(data);
           });
+
+          // update the dataset
+          const userId = localStorage.getItem('tars_userId') || '';
+          fetch(`${process.env.BASE_URL}/api/dashboard`, {
+              method: 'GET',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'userId': userId,
+                  'Authorization': `Bearer ${token}`
+              }
+          }).then(res => res.json()).then(data => {
+              console.log(data);
+              setDataset(data.notes);
+          });
+
           closeEditor();
     
         } catch (error) {

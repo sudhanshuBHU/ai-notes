@@ -13,6 +13,6 @@ export async function PUT(req: NextRequest) {
         return NextResponse.json({ note }, { status: 200 });
     }
     catch (error) {
-        return NextResponse.json({ message: 'Error updating todo', error }, { status: 500 });
+        return NextResponse.json({ message: 'Error updating note', error }, { status: 500 });
     }
 }

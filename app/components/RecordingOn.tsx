@@ -1,22 +1,27 @@
 "use client";
 
 import { Plus } from "lucide-react";
+import Image from 'next/image';
 import RecordingContainer from './RecordingContainer';
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
+import { Note } from "@/types/dataTypes";
 
 interface RecordingOnProps {
     closeModal: () => void;
+    setDataset: Dispatch<SetStateAction<Note[]>>;
 }
 
-export default function RecordingOn({ closeModal }: RecordingOnProps) {
+export default function RecordingOn({ closeModal, setDataset }: RecordingOnProps) {
 
     const [imageSrc, setImageSrc] = useState<string | null>(null);
     const [noteTitle, setNoteTitle] = useState("");
     const [originalText, setOriginalText] = useState("");
     const [imageFile, setImageFile] = useState<File | null>(null);
-    const [userData, setUserData] = useState({ userId: typeof window !== 'undefined' ? localStorage.getItem('tars_userId') : "", 
-                                                token: typeof window !== 'undefined' ? localStorage.getItem('tars_token') : "",
-                                                email: typeof window !== 'undefined' ? localStorage.getItem('tars_email') : "" });
+    const userData = {
+        userId: typeof window !== 'undefined' ? localStorage.getItem('tars_userId') : "",
+        token: typeof window !== 'undefined' ? localStorage.getItem('tars_token') : "",
+        email: typeof window !== 'undefined' ? localStorage.getItem('tars_email') : ""
+    };
 
     // useEffect(() => {
     //     if (typeof window !== "undefined") {
@@ -46,7 +51,7 @@ export default function RecordingOn({ closeModal }: RecordingOnProps) {
             }
 
             const result = await res.json();
-            console.log(result);
+            // console.log(result);
             const _id = result.savedNote._id;
             // console.log(_id);
 
@@ -72,7 +77,21 @@ export default function RecordingOn({ closeModal }: RecordingOnProps) {
 
             console.log("Image saved successfully");
             closeModal();
-            console.log(await response.json());
+            // console.log(await response.json());
+
+            // update the dataset
+            // const userId = localStorage.getItem('tars_userId') || '';
+            fetch(`${process.env.BASE_URL}/api/dashboard`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'userId': userData.userId || '',
+                    'Authorization': `Bearer ${userData.token}`
+                }
+            }).then(res => res.json()).then(data => {
+                // console.log(data);
+                setDataset(data.notes);
+            });
 
 
         } catch (error) {
@@ -141,9 +160,16 @@ export default function RecordingOn({ closeModal }: RecordingOnProps) {
 
             {/* display uploaded image */}
             {imageSrc &&
-                <div className="mt-4">
-                    <img src={imageSrc} alt="Uploaded" className="max-w-24 max-h-24 rounded-lg" />
-                </div>
+                // <div className="mt-4">
+                //     <img src={imageSrc} alt="Uploaded" className="max-w-24 max-h-24 rounded-lg" />
+                // </div>
+                <Image
+                    src={imageSrc}
+                    alt="Uploaded"
+                    width={96}
+                    height={96}
+                    className="max-w-24 max-h-24 rounded-lg"
+                />
             }
         </div>
     );

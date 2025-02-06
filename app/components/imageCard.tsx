@@ -1,9 +1,11 @@
 "use client";
+import { Note } from "@/types/dataTypes";
 import { Trash2 } from "lucide-react";
 import Image from "next/image";
+import { Dispatch, SetStateAction } from "react";
 
 
-export default function ImageCard({ src, noteId, deleteIdx, noDelete, close }: { src: string, noteId?: string, deleteIdx?: number, noDelete?: string, close?: () => void }) {
+export default function ImageCard({ src, noteId, deleteIdx, noDelete, close, setDataset }: { src: string, noteId?: string, deleteIdx?: number, noDelete?: string, close?: () => void, setDataset: Dispatch<SetStateAction<Note[]>> }) {
   // console.log(src);
   // console.log(image);
 
@@ -17,7 +19,7 @@ export default function ImageCard({ src, noteId, deleteIdx, noDelete, close }: {
     const token = localStorage.getItem('tars_token');
     console.log(noteId, deleteIdx);
     
-    await fetch('/api/dashboard/deleteImage', {
+    await fetch(`${process.env.BASE_URL}/api/dashboard/deleteImage`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -32,7 +34,22 @@ export default function ImageCard({ src, noteId, deleteIdx, noDelete, close }: {
       .catch(err => {
         console.log(err);
       });
+
+      // update the dataset
+    const userId = localStorage.getItem('tars_userId') || '';
+      fetch(`${process.env.BASE_URL}/api/dashboard`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'userId': userId,
+            'Authorization': `Bearer ${token}`
+        }
+    }).then(res => res.json()).then(data => {
+        console.log(data);
+        setDataset(data.notes);
+    });
   }
+  
 
   return (
     <div className="flex items-start gap-4">
@@ -40,9 +57,9 @@ export default function ImageCard({ src, noteId, deleteIdx, noDelete, close }: {
       <div className="relative h-24 w-24 overflow-hidden rounded-xl border bg-white shadow-sm">
         <Image
           src={src}
-          alt="Robot arm icon"
-          layout="fill"
-          objectFit="cover"
+          alt="N/A"
+          fill
+          style={{ objectFit: 'cover' }}
           className="object-cover"
         />
         <button className="absolute top-1 right-1 bg-white rounded-full p-1 shadow-md" onClick={handleDelete}>

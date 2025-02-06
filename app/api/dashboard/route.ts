@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
         const notes = await Data.find({ userId });
         return NextResponse.json({ notes }, { status: 200 });
     } catch (error) {
-        return NextResponse.json({ message: 'Error fetching todos', error }, { status: 500 });
+        return NextResponse.json({ message: 'Error fetching notes', error }, { status: 500 });
     }
 }
 
@@ -23,6 +23,6 @@ export async function DELETE(req: NextRequest) {
         return NextResponse.json({ message: 'Note deleted successfully' }, { status: 200 });
     }
     catch (error) {
-        return NextResponse.json({ message: 'Error deleting todo', error }, { status: 500 });
+        return NextResponse.json({ message: 'Error deleting note', error }, { status: 500 });
     }
 }

@@ -1,7 +1,7 @@
 
 import mongoose from 'mongoose';
 
-const todoSchema = new mongoose.Schema({
+const noteSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -33,6 +33,6 @@ const todoSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-// export const Todo = mongoose.model('Todo', todoSchema);
-const Todo = mongoose.models.Todo || mongoose.model('Todo', todoSchema);
-export default Todo;
+// export const Note = mongoose.model('Note', noteSchema);
+const Note = mongoose.models.Note || mongoose.model('Note', noteSchema);
+export default Note;
