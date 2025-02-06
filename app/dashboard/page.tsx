@@ -1,7 +1,7 @@
 "use client";
 
 import { AlignLeft, Plus, CirclePause, CirclePlay, Download, Files, Layers, MoveDiagonal, NotebookPen, PencilLineIcon, Search, SlidersHorizontal, Star, Users, ArrowDownAZ, ArrowDownZA, Trash2 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { Sidebar } from "../components/side-bar"
 import { NoteCard } from "../components/note-card"
 import { RecordingBar } from "../components/Recording-bar"
@@ -33,6 +33,7 @@ export default function Dashboard() {
   const [imageSrc, setImageSrc] = useState<string>('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [images, setImages] = useState<(string | null)[]>([]);
+  const [isEmpty, setIsEmpty] = useState(false);
 
 
   const closeEditor = () => setIsEditorOn(false);
@@ -87,6 +88,7 @@ export default function Dashboard() {
     };
   };
 
+  // fetching all notes
   useEffect(() => {
     async function getNotes() {
       try {
@@ -104,6 +106,7 @@ export default function Dashboard() {
         // console.log(data);
         setDataset(data.notes);
         setData(data.notes);
+        sortData(2); // descending order
       } catch (error) {
         console.log(error);
       }
@@ -119,7 +122,7 @@ export default function Dashboard() {
     if (!token || !user) {
       router.push('/login');
     }
-  }, [router]);
+  }, []);
 
   // handles search function
   useEffect(() => {
@@ -200,6 +203,7 @@ export default function Dashboard() {
   // extracting all images to avoid require() in the render
   useEffect(() => {
     const loadImages = async () => {
+      if (!dataset[selectedIndex]?.image) return;
       const loadedImages = await Promise.all(
         dataset[selectedIndex]?.image.map(async (item) => {
           if (item === '') return null;
@@ -212,6 +216,14 @@ export default function Dashboard() {
 
     loadImages();
   }, [dataset, selectedIndex]);
+
+  useEffect(() => {
+    if (dataset.length === 0) {
+      setIsEmpty(true);
+    } else {
+      setIsEmpty(false);
+    }
+  }, [dataset]);
 
   return (
     <div className="flex h-screen w-full">
@@ -251,6 +263,13 @@ export default function Dashboard() {
 
         {/* Notes */}
         <div className="flex flex-wrap p-4 h-[75%] overflow-y-scroll">
+          {/* message for Emptiness */}
+          {isEmpty &&
+            <div className="flex flex-col justify-center items-center h-[75%] text-2xl text-gray-400">
+              <div className="">No Notes Available</div>
+              <div>Record Your First Note with Voice</div>
+            </div>
+          }
           {dataset?.map((item, index) => {
             return <div key={index} className="mr-4 mb-4">
               <NoteCard
@@ -268,6 +287,8 @@ export default function Dashboard() {
 
           })}
         </div>
+
+
 
         {/* Recording Bar */}
         <div className="absolute bottom-4 w-[60%] rounded-full border border-slate-400 ml-7">
