@@ -9,7 +9,7 @@ import { Note } from "@/types/dataTypes";
 export default function TiptapEditor({ closeEditor, dataset, index }: { closeEditor: () => void, dataset: Note[], index: number }) {
     const editor = useEditor({
         extensions: [StarterKit, Underline],
-        content: dataset[index].description,
+        content: dataset[index].title,
         editorProps: {
             attributes: {
               class: "prose h-full h-full p-2 text-gray-900",
@@ -24,16 +24,17 @@ export default function TiptapEditor({ closeEditor, dataset, index }: { closeEdi
         try {
           const token = localStorage.getItem('tars_token');
           const noteId = dataset[index]._id;
-          fetch(`${process.env.BASE_URL}/api/dashboard/updateDescription`, {
+          fetch(`${process.env.BASE_URL}/api/dashboard/updateTitle`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ noteId, description: editor.getText() })
+            body: JSON.stringify({ noteId, title: editor.getText() })
           }).then(res => res.json()).then(data => {
             console.log(data);
           });
+          closeEditor();
     
         } catch (error) {
           console.log(error);
@@ -45,7 +46,7 @@ export default function TiptapEditor({ closeEditor, dataset, index }: { closeEdi
             {/* close and save btn */}
             <div className="flex justify-between">
                 <button onClick={closeEditor} className="text-2xl -mt-2">&times;</button>
-                <button className="text-white bg-gray-400 p-2 rounded-full pl-4 pr-4 text-sm" onClick={saveContent}>Save</button>
+                <button className="text-white bg-gray-400 p-2 rounded-full pl-4 pr-4 text-sm hover:bg-gray-600" onClick={saveContent}>Save</button>
             </div>
             {/* heading and copy btn */}
             <div className="flex gap-2 items-center">

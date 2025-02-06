@@ -17,6 +17,7 @@ const todoSchema = new mongoose.Schema({
     },
     image: {
         type: [String],
+        default: [],
     },
     favorite: {
         type: Boolean,

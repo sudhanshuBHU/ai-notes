@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 interface ModalProps {
     show: boolean;
-    onClose?: () => void;
-    title?: string;
     children: React.ReactNode;
     fullScreen?: boolean;
 }

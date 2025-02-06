@@ -1,24 +1,30 @@
 "use client";
 
-import { Home, Star } from "lucide-react";
+import { ChevronUp, Home, Star } from "lucide-react";
 import { SetStateAction, useState, Dispatch } from "react";
-
-interface dataType { userId: string; title: string; description: string; image: string[]; favorite: boolean; audioLength: string; timestamp: string; type: string; }
+import {Note} from '@/types/dataTypes';
+// interface dataType { userId: string; title: string; description: string; image: string[]; favorite: boolean; audioLength: string; timestamp: string; type: string; }
 
 interface SidebarProps {
-    dataset: dataType[]
-    data: dataType[]
-    setDataset: Dispatch<SetStateAction<{ userId: string; title: string; description: string; image: string[]; favorite: boolean; audioLength: string; timestamp: string; type: string; }[]>>
+    dataset: Note[]
+    data: Note[]
+    setDataset: Dispatch<SetStateAction<Note[]>>
 }
 
-export function Sidebar({ data, dataset, setDataset }: SidebarProps) {
+export function Sidebar({ data, setDataset }: SidebarProps) {
     const [selectedHome, setSelectedHome] = useState(true);
+    const name = typeof window !== 'undefined' ? localStorage.getItem('tars_name') : '';
+    const firstLetter = name ? name.charAt(0) : 'U';
+    const [selected, setSelected] = useState(false);
 
+    // handles the favorite button
     const handleFavorite = () => {
         const newData = data.filter((item) => item.favorite);
         setDataset(newData);
         setSelectedHome(false);
     }
+
+    // handles the home button
     const handleHome = () => {
         setDataset(data);
         setSelectedHome(true);
@@ -36,7 +42,7 @@ export function Sidebar({ data, dataset, setDataset }: SidebarProps) {
                         <span className="font-semibold">AI Notes</span>
                     </div>
 
-                {/* home button */}
+                    {/* home button */}
                     <div className="flex flex-col gap-2">
                         <button className={`p-2 flex gap-2 font-semibold rounded-full text-gray-500 ${selectedHome ? 'text-purple-800 bg-gray-200' : ''}`}
                             onClick={handleHome}
@@ -44,7 +50,7 @@ export function Sidebar({ data, dataset, setDataset }: SidebarProps) {
                             <Home size={24} />
                             Home
                         </button>
-                        
+
                         {/* favorite button */}
                         <button className={`p-2 flex gap-2 font-semibold rounded-full text-gray-500 ${selectedHome ? '' : 'text-purple-800 bg-gray-200'}`}
                             onClick={handleFavorite}
@@ -55,15 +61,34 @@ export function Sidebar({ data, dataset, setDataset }: SidebarProps) {
                     </div>
                 </div>
 
-                <div className="pt-4 pb-4 flex items-center ">
-                    <div className="h-8 w-8 rounded-full border bg-gray-800 flex items-center justify-center mr-1">
-                        <span className="text-sm text-white font-medium">E</span>
+                <div className="pt-4 pb-4 relative" onClick={() => setSelected(!selected)}>
+                    <div className="w-56 flex justify-between items-center cursor-pointer">
+                        <div className="flex items-center gap-2 ">
+                            <div className="h-8 w-8 rounded-full border bg-gray-800 flex items-center justify-center mr-1">
+                                <span className="text-sm text-white font-medium">{firstLetter || 'U'}</span>
+                            </div>
+                            <div className="text-sm font-medium">
+                                {name || 'User'}
+                            </div>
+                        </div>
+                        <div>
+                            <ChevronUp />
+                        </div>
                     </div>
-                    <select name="" id="" className="w-44">
-                        <option value="" className="text-sm font-medium">
-                            Emmanual Vincent
-                        </option>
-                    </select>
+                    {selected && <div className="absolute right-0 text-red-600 rounded-lg w-40 bottom-16">
+                        <ul>
+                            <li><button onClick={
+                                ()=>{
+                                    localStorage.removeItem('tars_token');
+                                    localStorage.removeItem('tars_name');
+                                    localStorage.removeItem('tars_userId');
+                                    localStorage.removeItem('tars_email');
+                                    setSelected(false);
+                                    window.location.href = '/login';
+                                }
+                            }>Logout</button></li>
+                        </ul>
+                    </div>}
                 </div>
             </div>
         </div>
