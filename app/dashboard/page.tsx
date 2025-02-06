@@ -1,7 +1,7 @@
 "use client";
 
 import { AlignLeft, Plus, CirclePause, CirclePlay, Download, Files, Layers, MoveDiagonal, NotebookPen, PencilLineIcon, Search, SlidersHorizontal, Star, Users, ArrowDownAZ, ArrowDownZA, Trash2 } from "lucide-react";
-import { use, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Sidebar } from "../components/side-bar"
 import { NoteCard } from "../components/note-card"
 import { RecordingBar } from "../components/Recording-bar"
@@ -112,7 +112,7 @@ export default function Dashboard() {
       }
     }
     getNotes();
-  }, []);
+  });
 
   // route protection
   useEffect(() => {
@@ -122,7 +122,7 @@ export default function Dashboard() {
     if (!token || !user) {
       router.push('/login');
     }
-  }, []);
+  }, [router]);
 
   // handles search function
   useEffect(() => {
