@@ -1,7 +1,6 @@
 "use client";
 import { Note } from "@/types/dataTypes";
 import { Trash2 } from "lucide-react";
-import { set } from "mongoose";
 import Image from "next/image";
 import { Dispatch, SetStateAction, useState } from "react";
 import toast from "react-hot-toast";

@@ -2,7 +2,6 @@
 
 import { Note } from "@/types/dataTypes";
 import { Copy, MoreHorizontal, ImageIcon, Play, TypeOutline } from "lucide-react";
-import { set } from "mongoose";
 import { Dispatch, SetStateAction, useState } from "react";
 import toast from "react-hot-toast";
 interface NoteCardProps {

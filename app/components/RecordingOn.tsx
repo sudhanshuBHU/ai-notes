@@ -6,7 +6,6 @@ import RecordingContainer from './RecordingContainer';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { Note } from "@/types/dataTypes";
 import toast from "react-hot-toast";
-import { set } from "mongoose";
 
 interface RecordingOnProps {
     closeModal: () => void;

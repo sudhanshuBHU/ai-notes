@@ -8,7 +8,6 @@ import { Bold, Files, Heading, Italic, List, Redo, Strikethrough, Undo, Underlin
 import { Note } from "@/types/dataTypes";
 import { SetStateAction } from "react";
 import toast from "react-hot-toast";
-import { set } from "mongoose";
 
 export default function TiptapEditor({ closeEditor, dataset, index, setDataset }: { closeEditor: () => void, dataset: Note[], index: number, setDataset: Dispatch<SetStateAction<Note[]>> }) {
 
