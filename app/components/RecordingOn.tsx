@@ -5,6 +5,7 @@ import Image from 'next/image';
 import RecordingContainer from './RecordingContainer';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { Note } from "@/types/dataTypes";
+import toast from "react-hot-toast";
 
 interface RecordingOnProps {
     closeModal: () => void;
@@ -47,6 +48,7 @@ export default function RecordingOn({ closeModal, setDataset }: RecordingOnProps
             });
 
             if (!res.ok) {
+                toast.error("Failed to save note");
                 throw new Error("Failed to save note");
             }
 
@@ -76,6 +78,7 @@ export default function RecordingOn({ closeModal, setDataset }: RecordingOnProps
             }
 
             console.log("Image saved successfully");
+            toast.success("Note saved successfully");
             closeModal();
             // console.log(await response.json());
 
@@ -95,6 +98,7 @@ export default function RecordingOn({ closeModal, setDataset }: RecordingOnProps
 
 
         } catch (error) {
+            toast.error("An error occurred while saving the note");
             console.error(error);
         }
     }

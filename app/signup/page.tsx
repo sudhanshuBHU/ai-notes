@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 export default function Signup() {
     const [name, setName] = useState('');
@@ -18,10 +19,12 @@ export default function Signup() {
         if (password !== confirmPassword) {
             // console.log('Passwords do not match');
             setError('Passwords do not match');
+            toast.error('Passwords do not match');
             return;
         }
         if (password.length < 6) {
             setError('Password must be at least 6 characters');
+            toast.error('Password must be at least 6 characters');
             return;
         }
 
@@ -41,13 +44,16 @@ export default function Signup() {
 
             const data = await response.json() as { status: boolean; user: string; token: string; message: string };
             if (data.status) {
+                toast.success('Account created successfully');
                 router.push('/login');
             } else {
                 // console.log("error at signup page");
+                toast.error(data.message);
                 setError(data.message);
             }
         } catch (error) {
             setError('An error occurred. Please try again.');
+            toast.error('An error occurred. Please try again.');
             // console.log("error at signup page catch");
             console.log(error);
 
@@ -61,10 +67,11 @@ export default function Signup() {
             const user = localStorage.getItem('tars_userId');
             const token = localStorage.getItem('tars_token');
             if (user && token) {
+                toast.success('You are already logged in');
                 router.push('/dashboard');
             }
         }
-    }, [router]);
+    });
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">

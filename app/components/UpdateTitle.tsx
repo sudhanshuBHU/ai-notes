@@ -7,6 +7,7 @@ import Underline from "@tiptap/extension-underline";
 import { Bold, Files, Heading, Italic, List, Redo, Strikethrough, Undo, Underline as UnderlineIcon } from "lucide-react";
 import { Note } from "@/types/dataTypes";
 import { SetStateAction } from "react";
+import toast from "react-hot-toast";
 
 export default function TiptapEditor({ closeEditor, dataset, index, setDataset }: { closeEditor: () => void, dataset: Note[], index: number, setDataset: Dispatch<SetStateAction<Note[]>> }) {
     const editor = useEditor({
@@ -33,9 +34,7 @@ export default function TiptapEditor({ closeEditor, dataset, index, setDataset }
               'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({ noteId, title: editor.getText() })
-          }).then(res => res.json()).then(data => {
-            console.log(data);
-          });
+          }).then(() => toast.success('Updated title successfully'));
 
           // update the dataset
           const userId = localStorage.getItem('tars_userId') || '';

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 export default function Login() {
     const [email, setEmail] = useState('');
@@ -15,16 +16,19 @@ export default function Login() {
         e.preventDefault();
         if (!email || !password) {
             setError('Email and password are required');
+            toast.error('Email and password are required');
             setIsLoading(false);
             return;
         }
         if (!email.includes('@')) {
             setError('Invalid email');
+            toast.error('Invalid email');
             setIsLoading(false);
             return;
         }
         if (password.length < 6) {
             setError('Password must be at least 6 characters');
+            toast.error('Password must be at least 6 characters');
             setIsLoading(false);
             return;
         }
@@ -43,6 +47,7 @@ export default function Login() {
             const { token, user, name, status } = data as { token: string; user: string, name: string, status: boolean };
             if (!status) {
                 setError('Invalid email or password');
+                toast.error('Invalid email or password');
                 setIsLoading(false);
                 return;
             }
@@ -52,15 +57,16 @@ export default function Login() {
             localStorage.setItem('tars_userId', user);
             // console.log(token, user, name);
             // console.log("logged in");
+            toast.success('Logged in successfully');
             router.push('/dashboard');
         } catch (error) {
             console.log(error);
             setError('Invalid email or password');
+            toast.error('Network error');
         }
         finally {
             setIsLoading(false);
         }
-
     };
 
 
@@ -70,10 +76,11 @@ export default function Login() {
             const token = localStorage.getItem('tars_token');
             const user = localStorage.getItem('tars_userId');
             if (token && user) {
+                toast.success('You are already logged in');
                 router.push('/dashboard');
             }
         }
-    }, [router]);
+    });
 
     return (
         <div className="min-h-screen flex mt-6 justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">

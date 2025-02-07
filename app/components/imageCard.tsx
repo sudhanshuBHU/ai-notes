@@ -3,6 +3,7 @@ import { Note } from "@/types/dataTypes";
 import { Trash2 } from "lucide-react";
 import Image from "next/image";
 import { Dispatch, SetStateAction } from "react";
+import toast from "react-hot-toast";
 
 
 export default function ImageCard({ src, noteId, deleteIdx, noDelete, close, setDataset }: { src: string, noteId?: string, deleteIdx?: number, noDelete?: string, close?: () => void, setDataset: Dispatch<SetStateAction<Note[]>> }) {
@@ -27,11 +28,11 @@ export default function ImageCard({ src, noteId, deleteIdx, noDelete, close, set
       },
       body: JSON.stringify({ noteId, deleteIdx })
     })
-      .then(res => res.json())
-      .then(data => {
-        console.log(data);
+      .then(()=>{
+        toast.success('Image deleted successfully');
       })
       .catch(err => {
+        toast.error('An error occurred while deleting the image');
         console.log(err);
       });
 
@@ -45,7 +46,7 @@ export default function ImageCard({ src, noteId, deleteIdx, noDelete, close, set
             'Authorization': `Bearer ${token}`
         }
     }).then(res => res.json()).then(data => {
-        console.log(data);
+        // console.log(data);
         setDataset(data.notes);
     });
   }

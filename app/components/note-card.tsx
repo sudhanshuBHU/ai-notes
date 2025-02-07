@@ -3,6 +3,7 @@
 import { Note } from "@/types/dataTypes";
 import { Copy, MoreHorizontal, ImageIcon, Play, TypeOutline } from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
+import toast from "react-hot-toast";
 interface NoteCardProps {
     title: string
     timestamp: string
@@ -36,11 +37,9 @@ export function NoteCard({ title, timestamp, content, duration, type, imageCount
             },
             body: JSON.stringify({ noteId })
         })
-            .then(res => res.json())
-            .then(data => {
-                console.log(data);
-            })
+            .then(() => toast.success('Note deleted successfully'))
             .catch(err => {
+                toast.error('An error occurred while deleting the note');
                 console.log(err);
             });
 

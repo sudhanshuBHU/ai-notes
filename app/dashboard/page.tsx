@@ -4,14 +4,15 @@ import { AlignLeft, Plus, CirclePause, CirclePlay, Download, Files, Layers, Move
 import { useEffect, useRef, useState } from "react";
 import { Sidebar } from "../components/side-bar"
 import { NoteCard } from "../components/note-card"
-import { RecordingBar } from "../components/Recording-bar"
-import Modal from "../components/Card";
+import { RecordingBar } from "../components/recording-bar"
+import Modal from "../components/card";
 import ImageCard from "../components/imageCard";
 import TiptapEditor from "../components/editor";
 import RecordingOn from "../components/RecordingOn";
 import { useRouter } from "next/navigation";
 import { Note } from '@/types/dataTypes';
 import UpdateTitle from "../components/UpdateTitle";
+import toast from "react-hot-toast";
 
 
 
@@ -34,6 +35,7 @@ export default function Dashboard() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [images, setImages] = useState<(string | null)[]>([]);
   const [isEmpty, setIsEmpty] = useState(false);
+  const [formattedDate, setFormattedDate] = useState("");
 
 
   const closeEditor = () => setIsEditorOn(false);
@@ -90,47 +92,50 @@ export default function Dashboard() {
 
   // fetching all notes
   useEffect(() => {
-    async function getNotes() {
-      try {
-        const token = localStorage.getItem('tars_token');
-        const userId = localStorage.getItem('tars_userId') || '';
-        const res = await fetch(`${process.env.BASE_URL}/api/dashboard`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'userId': userId,
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const data = await res.json();
-        // console.log(data);
-        setDataset(data.notes);
-        setData(data.notes);
-        sortData(2); // descending order
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    getNotes();
-  });
-
-  // route protection
-  useEffect(() => {
     if (typeof window === 'undefined') return;
     const token = localStorage.getItem('tars_token');
     const user = localStorage.getItem('tars_userId');
+    // console.log("from dashboard: ", token, user);
+
     if (!token || !user) {
+      toast.error('Please login to continue');
       router.push('/login');
     }
+    getNotes();
   }, [router]);
+
+  async function getNotes() {
+    try {
+      const token = localStorage.getItem('tars_token');
+      const userId = localStorage.getItem('tars_userId') || '';
+      const res = await fetch(`${process.env.BASE_URL}/api/dashboard`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'userId': userId,
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const dataRes = await res.json();
+      // console.log(data);
+      setDataset(dataRes.notes);
+      setData(dataRes.notes);
+      toast.success("Notes loaded successfully");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
 
   // handles search function
   useEffect(() => {
-    const filteredData: Note[] = data.filter((item: Note) => {
+    const filteredData: Note[] = dataset.filter((item: Note) => {
       return item.title.toLowerCase().includes(seacrhText.toLowerCase()) || item.description.toLowerCase().includes(seacrhText.toLowerCase());
     });
     setDataset(filteredData);
-  }, [data, seacrhText]);
+    // console.log("from search");
+
+  }, [seacrhText]);
 
   // handle sort function
   const sortData = (sortingCode: number) => {
@@ -154,11 +159,13 @@ export default function Dashboard() {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ noteId, favorite })
-      }).then(res => res.json()).then(data => {
-        console.log(data);
+      }).then(() => {
+        toast.success('Favourite updated successfully');
+        getNotes();
       });
 
     } catch (error) {
+      toast.error('Error updating favourite');
       console.log(error);
     }
   }
@@ -173,11 +180,12 @@ export default function Dashboard() {
       },
       body: JSON.stringify({ noteId: dataset[selectedIndex]._id })
     })
-      .then(res => res.json())
-      .then(data => {
-        console.log(data);
+      .then(() =>{
+        toast.success('Note deleted successfully');
+        getNotes();
       })
       .catch(err => {
+        toast.error('Error deleting note');
         console.log(err);
       });
   }
@@ -187,21 +195,23 @@ export default function Dashboard() {
     const token = localStorage.getItem('tars_token');
     const formData = new FormData();
     formData.append('image', imageFile as Blob);
-    const res = await fetch(`${process.env.BASE_URL}/api/dashboard/addImage/${dataset[selectedIndex]._id}`, {
+    await fetch(`${process.env.BASE_URL}/api/dashboard/addImage/${dataset[selectedIndex]._id}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`
       },
       body: formData
     });
-    const data = await res.json();
-    console.log(data);
+    toast.success('Image added successfully');
+    getNotes();
     setImageSrc('');
     setImageFile(null);
   }
 
-  // extracting all images to avoid require() in the render
+  // extracting all images to avoid require() in the render and date to avoid hydration error
   useEffect(() => {
+    // console.log("from image");
+
     const loadImages = async () => {
       if (!dataset[selectedIndex]?.image) return;
       const loadedImages = await Promise.all(
@@ -215,15 +225,30 @@ export default function Dashboard() {
     };
 
     loadImages();
-  }, [dataset, selectedIndex]);
+    // dates
+    if (dataset[selectedIndex]?.updatedAt) {
+      setFormattedDate(
+        new Date(dataset[selectedIndex]?.updatedAt).toLocaleString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+          hour12: true,
+        })
+      );
+    }
+  }, [selectedIndex]);
 
   useEffect(() => {
+    // console.log("from empty");
+
     if (dataset.length === 0) {
       setIsEmpty(true);
     } else {
       setIsEmpty(false);
     }
-  }, [dataset]);
+  }, [dataset.length]);
 
   return (
     <div className="flex h-screen w-full">
@@ -314,7 +339,7 @@ export default function Dashboard() {
           <button className="ml-4" onClick={() => setChangeTitleModal(true)}><PencilLineIcon size={14} /></button>
         </div>
         <div className="text-gray-400 text-sm">
-          {new Date(dataset[selectedIndex]?.updatedAt).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true })}
+          {formattedDate}
         </div>
 
         {/* music player */}
@@ -382,7 +407,7 @@ export default function Dashboard() {
           })
           } */}
 
-          {images.map((src, index) => {
+          {images && images.map((src, index) => {
             if (!src) return null;
             return (
               <div key={index}>
