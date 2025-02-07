@@ -129,6 +129,11 @@ export default function Dashboard() {
 
   // handles search function
   useEffect(() => {
+    if (seacrhText.trim() === '') {
+      setDataset(data);
+      return;
+    }
+    if (dataset.length === 0) return;
     const filteredData: Note[] = dataset.filter((item: Note) => {
       return item.title.toLowerCase().includes(seacrhText.toLowerCase()) || item.description.toLowerCase().includes(seacrhText.toLowerCase());
     });
@@ -137,8 +142,10 @@ export default function Dashboard() {
 
   }, [seacrhText]);
 
+
   // handle sort function
   const sortData = (sortingCode: number) => {
+    if(dataset.length === 0) return;
     const sortedData: Note[] = dataset.sort((a: Note, b: Note) => {
       return sortingCode === 1 ? a.updatedAt.localeCompare(b.updatedAt) : b.updatedAt.localeCompare(a.updatedAt);
     });
@@ -180,7 +187,7 @@ export default function Dashboard() {
       },
       body: JSON.stringify({ noteId: dataset[selectedIndex]._id })
     })
-      .then(() =>{
+      .then(() => {
         toast.success('Note deleted successfully');
         getNotes();
         closeModal();
@@ -224,7 +231,6 @@ export default function Dashboard() {
       );
       setImages(loadedImages);
     };
-    
 
     loadImages();
     // dates
@@ -245,7 +251,6 @@ export default function Dashboard() {
 
   useEffect(() => {
     // console.log("from empty");
-
     if (dataset.length === 0) {
       setIsEmpty(true);
     } else {
@@ -298,7 +303,7 @@ export default function Dashboard() {
               <div>Record Your First Note with Voice</div>
             </div>
           }
-          {dataset?.map((item, index) => {
+          { dataset.length !== 0 && dataset?.map((item, index) => {
             return <div key={index} className="mr-4 mb-4">
               <NoteCard
                 setDataset={setDataset}
@@ -309,7 +314,7 @@ export default function Dashboard() {
                 content={item.description}
                 type={item.type}
                 imageCount={item.image.length}
-                noteId={item._id}
+                noteId={item?._id}
               />
             </div>
 
