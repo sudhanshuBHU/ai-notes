@@ -25,15 +25,6 @@ export default function RecordingOn({ closeModal, setDataset }: RecordingOnProps
         email: typeof window !== 'undefined' ? localStorage.getItem('tars_email') : ""
     };
 
-    // useEffect(() => {
-    //     if (typeof window !== "undefined") {
-    //         const userId = localStorage.getItem("tars_userId") || '';
-    //         const token = localStorage.getItem("tars_token") || '';
-    //         const email = localStorage.getItem("tars_email") || '';
-    //         setUserData({ userId, token, email });
-    //     }
-    // }, []);
-
     const handleSave = async () => {
         console.log("saved note: ", noteTitle, originalText, imageSrc);
 

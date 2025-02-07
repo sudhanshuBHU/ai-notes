@@ -145,7 +145,7 @@ export default function Dashboard() {
 
   // handle sort function
   const sortData = (sortingCode: number) => {
-    if(dataset.length === 0) return;
+    if (dataset.length === 0) return;
     const sortedData: Note[] = dataset.sort((a: Note, b: Note) => {
       return sortingCode === 1 ? a.updatedAt.localeCompare(b.updatedAt) : b.updatedAt.localeCompare(a.updatedAt);
     });
@@ -220,19 +220,7 @@ export default function Dashboard() {
   useEffect(() => {
     // console.log("from image");
 
-    const loadImages = async () => {
-      if (!dataset[selectedIndex]?.image) return;
-      const loadedImages = await Promise.all(
-        dataset[selectedIndex]?.image.map(async (item) => {
-          if (item === '') return null;
-          const imageModule = await import(`@/uploads/${item}`);
-          return imageModule.default || imageModule;
-        })
-      );
-      setImages(loadedImages);
-    };
-
-    loadImages();
+    setImages(dataset[selectedIndex]?.image);
     // dates
     if (dataset[selectedIndex]?.updatedAt) {
       setFormattedDate(
@@ -303,7 +291,7 @@ export default function Dashboard() {
               <div>Record Your First Note with Voice</div>
             </div>
           }
-          { dataset.length !== 0 && dataset?.map((item, index) => {
+          {dataset.length !== 0 && dataset?.map((item, index) => {
             return <div key={index} className="mr-4 mb-4">
               <NoteCard
                 setDataset={setDataset}
@@ -421,7 +409,7 @@ export default function Dashboard() {
               <div key={index}>
                 <ImageCard
                   src={src}
-                  noteId={dataset[selectedIndex]._id}
+                  noteId={dataset[selectedIndex]?._id}
                   deleteIdx={index}
                   setDataset={setDataset}
                 />
