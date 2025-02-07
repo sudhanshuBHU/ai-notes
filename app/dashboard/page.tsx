@@ -292,7 +292,7 @@ export default function Dashboard() {
           {/* message for Emptiness */}
           {isEmpty &&
             <div className="flex flex-col justify-center items-center h-[75%] text-2xl text-gray-400">
-              <div className="">No Notes Available</div>
+              <div className="">Loading... or No Notes Available</div>
               <div>Record Your First Note with Voice</div>
             </div>
           }
