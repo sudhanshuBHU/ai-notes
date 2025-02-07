@@ -35,8 +35,8 @@ export default function Login() {
         setIsLoading(true);
         setError('');
         try {
-            // console.log(`${process.env.BASE_URL}/api/login`);
-            const response = await fetch(`${process.env.BASE_URL}/api/login`, {
+            // console.log(`/api/login`);
+            const response = await fetch(`/api/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

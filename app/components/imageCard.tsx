@@ -24,7 +24,7 @@ export default function ImageCard({ src, noteId, deleteIdx, noDelete, close, set
     
     setLoading(true);
 
-    await fetch(`${process.env.BASE_URL}/api/dashboard/deleteImage`, {
+    await fetch(`/api/dashboard/deleteImage`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ export default function ImageCard({ src, noteId, deleteIdx, noDelete, close, set
       // update the dataset
     const userId = localStorage.getItem('tars_userId') || '';
 
-      fetch(`${process.env.BASE_URL}/api/dashboard`, {
+      fetch(`/api/dashboard`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',

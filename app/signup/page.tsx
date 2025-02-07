@@ -34,7 +34,7 @@ export default function Signup() {
             // console.log(name, email, password);
             // console.log(process.env.BASE_URL + "/api/signup");
             
-            const response = await fetch(`${process.env.BASE_URL}/api/signup`, {
+            const response = await fetch(`/api/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

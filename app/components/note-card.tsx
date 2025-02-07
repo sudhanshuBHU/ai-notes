@@ -31,7 +31,7 @@ export function NoteCard({ title, timestamp, content, duration, type, imageCount
     const handleDelete = async () => {
         setLoading(true);
         const token = localStorage.getItem('tars_token');
-        await fetch(`${process.env.BASE_URL}/api/dashboard`, {
+        await fetch(`/api/dashboard`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ export function NoteCard({ title, timestamp, content, duration, type, imageCount
 
         // update the dataset
         const userId = localStorage.getItem('tars_userId') || '';
-        fetch(`${process.env.BASE_URL}/api/dashboard`, {
+        fetch(`/api/dashboard`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

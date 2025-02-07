@@ -39,7 +39,7 @@ export default function RecordingOn({ closeModal, setDataset }: RecordingOnProps
 
         setLoading(true);
         try {
-            const res = await fetch(`${process.env.BASE_URL}/api/dashboard/create`, {
+            const res = await fetch(`/api/dashboard/create`, {
                 method: "POST",
                 body: JSON.stringify({ userId: userData.userId, noteTitle, originalText, email: userData.email }),
                 headers: {
@@ -60,32 +60,33 @@ export default function RecordingOn({ closeModal, setDataset }: RecordingOnProps
 
             if (!imageFile) {
                 console.log("No image file found");
-                return;
+                setLoading(false);
+            } else {
+                const formData = new FormData();
+                formData.append("image", imageFile);
+
+                const response = await fetch(`/api/dashboard/create/${_id}`, {
+                    method: "PUT",
+                    body: formData,
+                    headers: {
+                        "authorization": `Bearer ${userData.token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to save image");
+                }
+
+                console.log("Image saved successfully");
+                toast.success("Note saved successfully");
+
+                // console.log(await response.json());
             }
 
-            const formData = new FormData();
-            formData.append("image", imageFile);
-
-            const response = await fetch(`${process.env.BASE_URL}/api/dashboard/create/${_id}`, {
-                method: "PUT",
-                body: formData,
-                headers: {
-                    "authorization": `Bearer ${userData.token}`,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to save image");
-            }
-
-            console.log("Image saved successfully");
-            toast.success("Note saved successfully");
-            closeModal();
-            // console.log(await response.json());
 
             // update the dataset
             // const userId = localStorage.getItem('tars_userId') || '';
-            fetch(`${process.env.BASE_URL}/api/dashboard`, {
+            fetch(`/api/dashboard`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -102,6 +103,7 @@ export default function RecordingOn({ closeModal, setDataset }: RecordingOnProps
             toast.error("An error occurred while saving the note");
             console.error(error);
         }
+        closeModal();
 
         setLoading(false);
 

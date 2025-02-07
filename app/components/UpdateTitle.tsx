@@ -31,7 +31,7 @@ export default function TiptapEditor({ closeEditor, dataset, index, setDataset }
         try {
           const token = localStorage.getItem('tars_token');
           const noteId = dataset[index]._id;
-          fetch(`${process.env.BASE_URL}/api/dashboard/updateTitle`, {
+          fetch(`/api/dashboard/updateTitle`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ export default function TiptapEditor({ closeEditor, dataset, index, setDataset }
 
           // update the dataset
           const userId = localStorage.getItem('tars_userId') || '';
-          fetch(`${process.env.BASE_URL}/api/dashboard`, {
+          fetch(`/api/dashboard`, {
               method: 'GET',
               headers: {
                   'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ export default function TiptapEditor({ closeEditor, dataset, index, setDataset }
                   'Authorization': `Bearer ${token}`
               }
           }).then(res => res.json()).then(data => {
-              console.log(data);
+            //   console.log(data);
               setDataset(data.notes);
           });
 

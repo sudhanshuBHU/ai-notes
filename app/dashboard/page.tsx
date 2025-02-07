@@ -108,7 +108,7 @@ export default function Dashboard() {
     try {
       const token = localStorage.getItem('tars_token');
       const userId = localStorage.getItem('tars_userId') || '';
-      const res = await fetch(`${process.env.BASE_URL}/api/dashboard`, {
+      const res = await fetch(`/api/dashboard`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -152,7 +152,7 @@ export default function Dashboard() {
       const token = localStorage.getItem('tars_token');
       const noteId = dataset[selectedIndex]._id;
       const favorite = !dataset[selectedIndex].favorite;
-      fetch(`${process.env.BASE_URL}/api/dashboard/favorite`, {
+      fetch(`/api/dashboard/favorite`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -196,7 +196,7 @@ export default function Dashboard() {
     const token = localStorage.getItem('tars_token');
     const formData = new FormData();
     formData.append('image', imageFile as Blob);
-    await fetch(`${process.env.BASE_URL}/api/dashboard/addImage/${dataset[selectedIndex]._id}`, {
+    await fetch(`/api/dashboard/addImage/${dataset[selectedIndex]._id}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`
