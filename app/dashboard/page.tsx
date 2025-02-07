@@ -224,6 +224,7 @@ export default function Dashboard() {
       );
       setImages(loadedImages);
     };
+    
 
     loadImages();
     // dates
@@ -239,7 +240,8 @@ export default function Dashboard() {
         })
       );
     }
-  }, [selectedIndex]);
+  }, [dataset, selectedIndex]);
+  // console.log(images);
 
   useEffect(() => {
     // console.log("from empty");
