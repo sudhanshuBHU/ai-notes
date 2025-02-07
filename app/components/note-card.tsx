@@ -2,6 +2,7 @@
 
 import { Note } from "@/types/dataTypes";
 import { Copy, MoreHorizontal, ImageIcon, Play, TypeOutline } from "lucide-react";
+import { set } from "mongoose";
 import { Dispatch, SetStateAction, useState } from "react";
 import toast from "react-hot-toast";
 interface NoteCardProps {
@@ -20,6 +21,7 @@ export function NoteCard({ title, timestamp, content, duration, type, imageCount
     const maxContentSize = 250;
     let newContent = content;
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const handleOpen = () => {
         openModal();
@@ -28,6 +30,7 @@ export function NoteCard({ title, timestamp, content, duration, type, imageCount
 
     // deleting note
     const handleDelete = async () => {
+        setLoading(true);
         const token = localStorage.getItem('tars_token');
         await fetch(`${process.env.BASE_URL}/api/dashboard`, {
             method: 'DELETE',
@@ -56,7 +59,7 @@ export function NoteCard({ title, timestamp, content, duration, type, imageCount
             // console.log(data);
             setDataset(data.notes);
         });
-
+        setLoading(false);
         setIsPopupOpen(false);
     }
 
@@ -109,7 +112,7 @@ export function NoteCard({ title, timestamp, content, duration, type, imageCount
                 {isPopupOpen &&
                     <div className="absolute text-xs bottom-10">
                         <p className="cursor-pointer border rounded-full pl-2 pr-2" onClick={handleOpen}>Open</p>
-                        <p className="mt-2 cursor-pointer border rounded-full pl-2 pr-2" onClick={handleDelete}>Delete</p>
+                        <button className="mt-2 cursor-pointer border rounded-full pl-2 pr-2" onClick={handleDelete}>{loading ? 'Deleting...' : 'Delete'}</button>
                     </div>
                 }
             </div>

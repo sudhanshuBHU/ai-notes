@@ -5,10 +5,13 @@ import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import { Bold, Files, Heading, Italic, List, Redo, Strikethrough, Undo, Underline as UnderlineIcon } from "lucide-react";
 import { Note } from "@/types/dataTypes";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import toast from "react-hot-toast";
 
 export default function TiptapEditor({ closeEditor, dataset, index, setDataset }: { closeEditor: () => void, dataset: Note[], index: number, setDataset: Dispatch<SetStateAction<Note[]>> }) {
+    
+    const [loading, setLoading] = useState(false);
+    
     const editor = useEditor({
         extensions: [StarterKit, Underline],
         content: dataset[index].description,
@@ -23,6 +26,7 @@ export default function TiptapEditor({ closeEditor, dataset, index, setDataset }
 
     // Save content to the database -> update the description of the note
     const saveContent = () => {
+        setLoading(true);
         try {
             const token = localStorage.getItem('tars_token');
             const noteId = dataset[index]._id;
@@ -55,6 +59,7 @@ export default function TiptapEditor({ closeEditor, dataset, index, setDataset }
             toast.error('An error occurred while updating the note');
             console.log(error);
         }
+        setLoading(false);
     }
 
     return (
@@ -62,7 +67,7 @@ export default function TiptapEditor({ closeEditor, dataset, index, setDataset }
             {/* close and save btn */}
             <div className="flex justify-between">
                 <button onClick={closeEditor} className="text-2xl -mt-2">&times;</button>
-                <button className="text-white bg-gray-400 p-2 rounded-full pl-4 pr-4 text-sm" onClick={saveContent}>Save</button>
+                <button className="text-white bg-gray-400 p-2 rounded-full pl-4 pr-4 text-sm" onClick={saveContent} disabled={loading}>{loading ? 'Saving...' : 'Save'}</button>
             </div>
             {/* heading and copy btn */}
             <div className="flex gap-2 items-center">

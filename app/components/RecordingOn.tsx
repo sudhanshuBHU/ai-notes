@@ -6,6 +6,7 @@ import RecordingContainer from './RecordingContainer';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { Note } from "@/types/dataTypes";
 import toast from "react-hot-toast";
+import { set } from "mongoose";
 
 interface RecordingOnProps {
     closeModal: () => void;
@@ -18,6 +19,7 @@ export default function RecordingOn({ closeModal, setDataset }: RecordingOnProps
     const [noteTitle, setNoteTitle] = useState("");
     const [originalText, setOriginalText] = useState("");
     const [imageFile, setImageFile] = useState<File | null>(null);
+    const [loading, setLoading] = useState(false);
     const userData = {
         userId: typeof window !== 'undefined' ? localStorage.getItem('tars_userId') : "",
         token: typeof window !== 'undefined' ? localStorage.getItem('tars_token') : "",
@@ -36,7 +38,7 @@ export default function RecordingOn({ closeModal, setDataset }: RecordingOnProps
     const handleSave = async () => {
         console.log("saved note: ", noteTitle, originalText, imageSrc);
 
-
+        setLoading(true);
         try {
             const res = await fetch(`${process.env.BASE_URL}/api/dashboard/create`, {
                 method: "POST",
@@ -101,6 +103,9 @@ export default function RecordingOn({ closeModal, setDataset }: RecordingOnProps
             toast.error("An error occurred while saving the note");
             console.error(error);
         }
+
+        setLoading(false);
+
     }
 
     return (
@@ -108,7 +113,7 @@ export default function RecordingOn({ closeModal, setDataset }: RecordingOnProps
             {/* close and save btn */}
             <div className="flex justify-between">
                 <button onClick={closeModal} className="text-2xl -mt-2">&times;</button>
-                <button onClick={handleSave} className="text-white bg-gray-400 p-2 rounded-full pl-4 pr-4 text-sm hover:bg-gray-500">Save</button>
+                <button onClick={handleSave} disabled={loading} className="text-white bg-gray-400 p-2 rounded-full pl-4 pr-4 text-sm hover:bg-gray-500">{loading ? 'Saving...' : 'Save'}</button>
             </div>
 
             {/* heading and copy btn */}

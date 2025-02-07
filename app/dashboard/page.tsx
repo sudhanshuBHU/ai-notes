@@ -183,6 +183,7 @@ export default function Dashboard() {
       .then(() =>{
         toast.success('Note deleted successfully');
         getNotes();
+        closeModal();
       })
       .catch(err => {
         toast.error('Error deleting note');
@@ -286,7 +287,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Notes */}
+        {/* Notes  and message no notes available*/}
         <div className="flex flex-wrap p-4 h-[75%] overflow-y-scroll">
           {/* message for Emptiness */}
           {isEmpty &&

@@ -1,14 +1,17 @@
 "use client";
 import { Note } from "@/types/dataTypes";
 import { Trash2 } from "lucide-react";
+import { set } from "mongoose";
 import Image from "next/image";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import toast from "react-hot-toast";
 
 
 export default function ImageCard({ src, noteId, deleteIdx, noDelete, close, setDataset }: { src: string, noteId?: string, deleteIdx?: number, noDelete?: string, close?: () => void, setDataset: Dispatch<SetStateAction<Note[]>> }) {
   // console.log(src);
   // console.log(image);
+
+  const [loading, setLoading] = useState(false);
 
   const handleDelete = async () => {
     if (noDelete === 'temp') {
@@ -20,6 +23,8 @@ export default function ImageCard({ src, noteId, deleteIdx, noDelete, close, set
     const token = localStorage.getItem('tars_token');
     console.log(noteId, deleteIdx);
     
+    setLoading(true);
+
     await fetch(`${process.env.BASE_URL}/api/dashboard/deleteImage`, {
       method: 'DELETE',
       headers: {
@@ -38,6 +43,7 @@ export default function ImageCard({ src, noteId, deleteIdx, noDelete, close, set
 
       // update the dataset
     const userId = localStorage.getItem('tars_userId') || '';
+
       fetch(`${process.env.BASE_URL}/api/dashboard`, {
         method: 'GET',
         headers: {
@@ -49,6 +55,8 @@ export default function ImageCard({ src, noteId, deleteIdx, noDelete, close, set
         // console.log(data);
         setDataset(data.notes);
     });
+
+    setLoading(false);
   }
   
 
@@ -63,8 +71,8 @@ export default function ImageCard({ src, noteId, deleteIdx, noDelete, close, set
           style={{ objectFit: 'cover' }}
           className="object-cover"
         />
-        <button className="absolute top-1 right-1 bg-white rounded-full p-1 shadow-md" onClick={handleDelete}>
-          <Trash2 size={10} fill="black" />
+        <button className="absolute top-1 right-1 bg-white rounded-full p-1 shadow-md" disabled={loading} onClick={handleDelete}>
+          {loading ? 'deleting...' : <Trash2 size={10} fill="black" />}
         </button>
       </div>
     </div>
