@@ -13,7 +13,6 @@ import { useRouter } from "next/navigation";
 import { Note } from '@/types/dataTypes';
 import UpdateTitle from "../components/UpdateTitle";
 import toast from "react-hot-toast";
-import { set } from "mongoose";
 
 
 
