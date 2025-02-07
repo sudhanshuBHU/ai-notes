@@ -12,73 +12,79 @@ import toast from "react-hot-toast";
 export default function TiptapEditor({ closeEditor, dataset, index, setDataset }: { closeEditor: () => void, dataset: Note[], index: number, setDataset: Dispatch<SetStateAction<Note[]>> }) {
 
     const [loading, setLoading] = useState(false);
-    
+
     const editor = useEditor({
         extensions: [StarterKit, Underline],
         content: dataset[index].title,
         editorProps: {
             attributes: {
-              class: "prose h-full h-full p-2 text-gray-900",
+                class: "prose h-full h-full p-2 text-gray-900",
             },
-          }
+        }
     });
 
     if (!editor) return null;
 
     // Save content to the database -> update the description of the note
-    const saveContent = () => {
+    const saveContent = async () => {
         setLoading(true);
         try {
-          const token = localStorage.getItem('tars_token');
-          const noteId = dataset[index]._id;
-          fetch(`/api/dashboard/updateTitle`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ noteId, title: editor.getText() })
-          }).then(() => toast.success('Updated title successfully'));
+            const token = localStorage.getItem('tars_token');
+            const noteId = dataset[index]._id;
+            fetch(`/api/dashboard/updateTitle`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ noteId, title: editor.getText() })
+            }).then(() => toast.success('Updated title successfully'));
 
-          // update the dataset
-          const userId = localStorage.getItem('tars_userId') || '';
-          fetch(`/api/dashboard`, {
-              method: 'GET',
-              headers: {
-                  'Content-Type': 'application/json',
-                  'userId': userId,
-                  'Authorization': `Bearer ${token}`
-              }
-          }).then(res => res.json()).then(data => {
-            //   console.log(data);
-              setDataset(data.notes);
-          });
+            // update the dataset
+            const userId = localStorage.getItem('tars_userId') || '';
+            fetch(`/api/dashboard`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'userId': userId,
+                    'Authorization': `Bearer ${token}`
+                }
+            }).then(res => res.json()).then(data => {
+                //   console.log(data);
+                setDataset(data.notes);
+            });
 
-          closeEditor();
-    
+            closeEditor();
+
         } catch (error) {
-          console.log(error);
+            console.log(error);
         }
+
         setLoading(false);
-      }
-    
+    }
+    //   console.log(router);
+
+
     return (
-        <div className="p-4 pt-1 rounded-lg w-full mx-auto">
-            {/* close and save btn */}
-            <div className="flex justify-between">
-                <button onClick={closeEditor} className="text-2xl -mt-2">&times;</button>
-                <button className="text-white bg-gray-400 p-2 rounded-full pl-4 pr-4 text-sm hover:bg-gray-600" onClick={saveContent} disabled={loading}>{loading ? 'Saving...' : 'Save'}</button>
-            </div>
-            {/* heading and copy btn */}
-            <div className="flex gap-2 items-center">
-                <h2 className="text-gray-500 font-semibold">Transcript</h2>
-                <button>
-                    <Files size={14} />
-                </button>
-            </div>
-            {/* Editor Content */}
-            <div className="p-2 rounded bg-white text-black mt-4 text-sm h-96 overflow-y-scroll">
-                <EditorContent editor={editor}/>
+        <div className="flex flex-col justify-between p-4 pt-1 rounded-lg w-full h-[490]">
+            <div>
+
+                {/* close and save btn */}
+                <div className="flex justify-between">
+                    <button onClick={closeEditor} className="text-2xl -mt-2">&times;</button>
+                    <button className="text-white bg-gray-400 p-2 rounded-full pl-4 pr-4 text-sm hover:bg-gray-600" onClick={saveContent} disabled={loading}>{loading ? 'Saving...' : 'Save'}</button>
+                </div>
+                {/* heading and copy btn */}
+                <div className="flex gap-2 items-center">
+                    <h2 className="text-gray-500 font-semibold">Transcript</h2>
+                    <button>
+                        <Files size={14} />
+                    </button>
+                </div>
+                {/* Editor Content */}
+                <div className="p-2 rounded bg-white text-black mt-4 text-sm overflow-y-scroll">
+                    <EditorContent editor={editor} />
+                </div>
             </div>
             {/* Toolbar */}
             <div className="flex justify-center items-center mt-5">

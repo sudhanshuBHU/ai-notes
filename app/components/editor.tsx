@@ -9,9 +9,9 @@ import { Dispatch, SetStateAction, useState } from "react";
 import toast from "react-hot-toast";
 
 export default function TiptapEditor({ closeEditor, dataset, index, setDataset }: { closeEditor: () => void, dataset: Note[], index: number, setDataset: Dispatch<SetStateAction<Note[]>> }) {
-    
+
     const [loading, setLoading] = useState(false);
-    
+
     const editor = useEditor({
         extensions: [StarterKit, Underline],
         content: dataset[index].description,
@@ -25,7 +25,7 @@ export default function TiptapEditor({ closeEditor, dataset, index, setDataset }
     if (!editor) return null;
 
     // Save content to the database -> update the description of the note
-    const saveContent = () => {
+    const saveContent = async () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('tars_token');
@@ -37,10 +37,9 @@ export default function TiptapEditor({ closeEditor, dataset, index, setDataset }
                     'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({ noteId, description: editor.getText() })
-            }).then(res => res.json()).then(data => {
-                console.log(data);
-            });
-             // Update the dataset
+            }).then(() => toast.success('Note updated successfully'));
+
+            // Update the dataset
             const userId = localStorage.getItem('tars_userId') || '';
             fetch(`/api/dashboard`, {
                 method: 'GET',
@@ -53,7 +52,7 @@ export default function TiptapEditor({ closeEditor, dataset, index, setDataset }
                 // console.log(data);
                 setDataset(data.notes);
             });
-            toast.success('Note updated successfully');
+            closeEditor();
 
         } catch (error) {
             toast.error('An error occurred while updating the note');
@@ -63,25 +62,28 @@ export default function TiptapEditor({ closeEditor, dataset, index, setDataset }
     }
 
     return (
-        <div className="p-4 pt-1 rounded-lg w-full mx-auto">
-            {/* close and save btn */}
-            <div className="flex justify-between">
-                <button onClick={closeEditor} className="text-2xl -mt-2">&times;</button>
-                <button className="text-white bg-gray-400 p-2 rounded-full pl-4 pr-4 text-sm" onClick={saveContent} disabled={loading}>{loading ? 'Saving...' : 'Save'}</button>
+        <div className="flex flex-col justify-between w-full h-[490] p-4 pt-1 rounded-lg">
+            <div>
+                {/* close and save btn */}
+                <div className="flex justify-between">
+                    <button onClick={closeEditor} className="text-2xl -mt-2">&times;</button>
+                    <button className="text-white bg-gray-400 p-2 rounded-full pl-4 pr-4 text-sm" onClick={saveContent} disabled={loading}>{loading ? 'Saving...' : 'Save'}</button>
+                </div>
+                {/* heading and copy btn */}
+                <div className="flex gap-2 items-center">
+                    <h2 className="text-gray-500 font-semibold">Transcript</h2>
+                    <button>
+                        <Files size={14} />
+                    </button>
+                </div>
+                {/* Editor Content */}
+                <div className="p-2 rounded bg-white text-black mt-4 text-sm overflow-y-scroll">
+                    <EditorContent editor={editor} />
+                </div>
             </div>
-            {/* heading and copy btn */}
-            <div className="flex gap-2 items-center">
-                <h2 className="text-gray-500 font-semibold">Transcript</h2>
-                <button>
-                    <Files size={14} />
-                </button>
-            </div>
-            {/* Editor Content */}
-            <div className="p-2 rounded bg-white text-black mt-4 text-sm h-96 overflow-y-scroll">
-                <EditorContent editor={editor} />
-            </div>
+
             {/* Toolbar */}
-            <div className="flex justify-center items-center mt-5">
+            <div className="justify-center items-center mt-5">
                 <div className="flex gap-4 justify-center border border-gray-300 rounded-full items-center pl-3 pr-3 p-2">
                     <button onClick={() => editor.chain().focus().toggleBold().run()} className=" rounded">
                         <Bold size={16} />

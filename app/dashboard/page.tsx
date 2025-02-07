@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { Note } from '@/types/dataTypes';
 import UpdateTitle from "../components/UpdateTitle";
 import toast from "react-hot-toast";
+import { set } from "mongoose";
 
 
 
@@ -36,6 +37,7 @@ export default function Dashboard() {
   const [images, setImages] = useState<(string | null)[]>([]);
   const [isEmpty, setIsEmpty] = useState(false);
   const [formattedDate, setFormattedDate] = useState("");
+  const [imageUploading, setImageUploading] = useState(false);
 
 
   const closeEditor = () => setIsEditorOn(false);
@@ -200,6 +202,7 @@ export default function Dashboard() {
 
   // add image to the existing note
   const addImage = async () => {
+    setImageUploading(true);
     const token = localStorage.getItem('tars_token');
     const formData = new FormData();
     formData.append('image', imageFile as Blob);
@@ -214,6 +217,7 @@ export default function Dashboard() {
     getNotes();
     setImageSrc('');
     setImageFile(null);
+    setImageUploading(false);
   }
 
   // extracting all images to avoid require() in the render and date to avoid hydration error
@@ -449,7 +453,8 @@ export default function Dashboard() {
             </div>
           }
           {imageSrc &&
-            <button className=" mb-2 text-blue-500 font-bold hover:text-blue-700" onClick={addImage}>Add Image</button>
+            <button className=" mb-2 text-blue-500 font-bold hover:text-blue-700" onClick={addImage}>${imageUploading ?
+              'Uploading...' : 'Add Image'}</button>
           }
         </div>
       </Modal>
